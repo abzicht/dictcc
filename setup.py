@@ -38,7 +38,7 @@ setup(
     include_package_data=True,
     packages=find_packages(),
     entry_points={'console_scripts': [
-       'dictcc = dictcc.dictcc:main',
+       'dictcc = dictcc.application:main',
     ]},
     install_requires=['tabulate', 'bs4'],
 )

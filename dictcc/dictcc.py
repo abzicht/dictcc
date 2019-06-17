@@ -1,19 +1,17 @@
 #!/usr/bin/python3
 
-import sys
-import requests
-import argparse
-import os
-import textwrap
+import requests as __requests__
+import os as __os__
+import textwrap as __textwrap__
 
-from tabulate import tabulate
-from bs4 import BeautifulSoup
+from tabulate import tabulate as __tabulate__
+from bs4 import BeautifulSoup as __BeautifulSoup__
 
 class Dictcc:
 
 	def __init__(self):
-		_, self.columns          = os.popen('stty size', 'r').read().split()
-		self.requests_session    = requests.Session()
+		_, self.columns          = __os__.popen('stty size', 'r').read().split()
+		self.requests_session    = __requests__.Session()
 		self.current_suggestions = []
 
 	def __request__(self, word: str, f: str, t: str):
@@ -31,10 +29,10 @@ class Dictcc:
 		if (tag.dfn):
 			all_dfn = ", ".join([dfn_tag.text for dfn_tag in tag.find_all('dfn')])
 			str_tag = ' '.join([str_tag, '(' + all_dfn + ')'])
-		return '\n   '.join(textwrap.wrap(str_tag, (int(self.columns) - 8) / 2))
+		return '\n   '.join(__textwrap__.wrap(str_tag, (int(self.columns) - 8) / 2))
 
 	def __parse_response__(self, html):
-		soup        = BeautifulSoup(html, 'html.parser')
+		soup        = __BeautifulSoup__(html, 'html.parser')
 		data        = [tag for tag in soup.find_all('td', 'td7nl')]
 		raw_from_to = zip(data[::2], data[1::2])
 		res_from_to = list()
@@ -43,7 +41,7 @@ class Dictcc:
 		return res_from_to
 
 	def __parse_suggestions__(self, html) -> list:
-		soup = BeautifulSoup(html, 'html.parser')
+		soup = __BeautifulSoup__(html, 'html.parser')
 		data = [tag.a.text for tag in soup.find_all('td', 'td3nl') if tag.a]
 		return data
 
@@ -72,16 +70,15 @@ class Dictcc:
 			print(e)
 			return
 		if result:
-			print(tabulate(result, [primary_lang, secondary_lang], tablefmt='orgtbl'))
+			print(__tabulate__(result, [primary_lang, secondary_lang], tablefmt='orgtbl'))
 			self.current_suggestions = []
 		else:
 			print(' '.join(["No translation found for:", word]))
 			self.current_suggestions = suggestions
-
-			print('\nSuggestions given by dict.cc'
-					+ 'choose by entering the number):')
-			for i,s in enumerate(suggestions):
-				print(" - {}: {}".format(i+1, s))
+			if len(suggestions) > 0:
+				print('Suggestions given by dict.cc choose by entering the number):')
+				for i,s in enumerate(suggestions):
+					print(" - {}: {}".format(i+1, s))
 
 	def handle_console(self, primary_lang: str, secondary_lang: str) -> None:
 		print('Enter a word for translation')
@@ -93,38 +90,3 @@ class Dictcc:
 				self.handle_translation(user_input, primary_lang, secondary_lang)
 		except KeyboardInterrupt:
 			return
-
-def main():
-	prim     = ['de', 'en']
-	sec      = ['bg', 'bs', 'cs', 'da', 'el', 'eo', 'es', 'fi', 'fr', 'hr',
-				'hu', 'is', 'it', 'la', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sk',
-				'sq', 'sr', 'sv', 'tr']
-	all_dict = prim + sec
-	parser   = argparse.ArgumentParser(
-			description='Query dict.cc for a translation.',
-			formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-	parser.add_argument('-p', '--prim', type=str, default='en', help='Primary language')
-	parser.add_argument('-s', '--sec', type=str, default='de', help='Secondary language')
-	parser.add_argument('-c', '--console', action='store_true')
-	parser.add_argument('word', nargs=argparse.REMAINDER, help='word to translate')
-
-	args = parser.parse_args()
-
-	if not args.prim in prim:
-		print("Primary lang must be in : [" + ", ".join(prim) + "]")
-		exit(1)
-	if not args.sec in all_dict:
-		print("Secondary lang must be in : [" + ", ".join(all_dict) + "]")
-		exit(1)
-	if args.prim == args.sec:
-		print("Given languages must be different. Given : \"{}\" and \"{}\"".format(args.prim, args.sec))
-		exit(1)
-
-	d = Dictcc()
-	if len(args.word) > 0 and not args.console:
-		d.handle_translation(args.word[0], args.prim, args.sec)
-	else:
-		d.handle_console(args.prim, args.sec)
-
-if __name__ == '__main__':
-	main()
