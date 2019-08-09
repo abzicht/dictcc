@@ -76,7 +76,7 @@ class Dictcc:
 			print(' '.join(["No translation found for:", word]))
 			self.current_suggestions = suggestions
 			if len(suggestions) > 0:
-				print('Suggestions given by dict.cc choose by entering the number):')
+				print('Suggestions given by dict.cc (choose by entering the number):')
 				for i,s in enumerate(suggestions):
 					print(" - {}: {}".format(i+1, s))
 
