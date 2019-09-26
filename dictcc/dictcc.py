@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import requests as __requests__
 import os as __os__
 import textwrap as __textwrap__

@@ -1,6 +1,9 @@
 import argparse as __argparse__
 
-from dictcc.dictcc import Dictcc as __Dictcc__
+try:
+	from dictcc import Dictcc as __Dictcc__
+except ImportError:
+	from dictcc.dictcc import Dictcc as __Dictcc__
 
 
 def main():
