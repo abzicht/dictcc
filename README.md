@@ -2,6 +2,11 @@
 
 This tool enables the use of [dict.cc](https://dict.cc) over the command line.
 
+## About this Fork
+
+With this fork, the original script has become a Python module. Functionality is moved to a `Dictcc` class and system installation is now possible.
+Also, the word suggestions functionality was improved. Main focus lays on the console, which uses a continuous `requests` session to speed up the process. This latter functionality was also merged to the original code base.
+
 ## Install
 Install `dictcc` on your system via
 ```bash
